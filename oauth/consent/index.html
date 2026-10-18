@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ar">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>ربط عروستي بـ ChatGPT</title>
+<link rel="icon" href="../../logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#9E3D5F;--bg:#F4ECE4;--deep:#4A2632;--ink:#2A1D22;--line:#E8DCD2;--muted:#7B6B70;--surface:#FFFCF8}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:'Cairo',system-ui,sans-serif;display:flex;align-items:center;justify-content:center;padding:24px}
+  .card{direction:rtl;text-align:right;width:100%;max-width:420px;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:28px 24px;box-shadow:0 12px 40px rgba(74,38,50,.08)}
+  .logo{display:block;width:64px;height:64px;margin:0 auto 12px;border-radius:16px}
+  h1{font-size:22px;margin:0 0 6px;text-align:center;color:var(--deep)}
+  .sub{color:var(--muted);font-size:15px;line-height:1.8;text-align:center;margin:0 0 20px}
+  ul{list-style:none;padding:0;margin:0 0 20px}
+  li{padding:10px 0;border-top:1px solid var(--line);font-size:15px;line-height:1.7}
+  li:first-child{border-top:0}
+  li b{color:var(--deep)}
+  .who{background:var(--bg);border-radius:14px;padding:10px 14px;font-size:14px;color:var(--muted);margin-bottom:18px}
+  .who b{color:var(--ink);direction:ltr;unicode-bidi:embed}
+  button{width:100%;border:0;border-radius:999px;padding:14px;font:700 16px 'Cairo',sans-serif;cursor:pointer;margin-top:10px}
+  .primary{background:var(--accent);color:#fff}
+  .ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+  .google{background:#fff;color:var(--ink);border:1px solid var(--line);display:flex;gap:10px;align-items:center;justify-content:center}
+  button:disabled{opacity:.6;cursor:default}
+  .note{font-size:13px;color:var(--muted);text-align:center;margin-top:16px;line-height:1.7}
+  .note a{color:var(--accent)}
+  .err{color:#B3261E;font-size:14px;text-align:center;margin-top:12px;min-height:1em}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main class="card">
+  <img class="logo" src="../../logo.png" alt="عروستي">
+  <h1>ربط عروستي بـ ChatGPT</h1>
+  <p class="sub" id="lead">جاري التحميل...</p>
+
+  <section id="login" hidden>
+    <button class="google" id="googleBtn">
+      <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>
+      كمّلي بحساب جوجل
+    </button>
+    <p class="note">استخدمي نفس حساب جوجل اللي مسجلة بيه في تطبيق عروستي.</p>
+  </section>
+
+  <section id="consent" hidden>
+    <div class="who">داخلة بحساب <b id="email"></b></div>
+    <ul>
+      <li><b>هيقدر يشوف</b> ليستة الجهاز والميزانية والمهام بتاعتك في عروستي.</li>
+      <li><b>هيقدر يسجّل</b> بنود وفلوس ومهام لما تطلبي منه ده في الشات.</li>
+      <li><b>مش هيقدر</b> يمسح أي حاجة، ولا يشوف بيانات أي حد تاني.</li>
+    </ul>
+    <button class="primary" id="approve">اربطي الحساب</button>
+    <button class="ghost" id="deny">لأ، مش دلوقتي</button>
+    <p class="note">تقدري تفصلي الربط في أي وقت من إعدادات ChatGPT.<br><a href="../../#privacy">سياسة الخصوصية</a></p>
+  </section>
+
+  <p class="err" id="err"></p>
+</main>
+
+<script type="module">
+  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.118.0';
+  const sb = createClient('https://jgnmdyllqvyrjmweascw.supabase.co', 'sb_publishable_kTx3zVUSeX2Q86THO6HSeA_IiOexwqZ');
+  const $ = (id) => document.getElementById(id);
+  const lead = $('lead'), err = $('err');
+  const show = (id) => ['login', 'consent'].forEach((s) => $(s).hidden = s !== id);
+  const fail = (m) => { err.textContent = m; };
+
+  const params = new URLSearchParams(location.search);
+  const authId = params.get('authorization_id') || sessionStorage.getItem('aro_auth_id');
+  if (params.get('authorization_id')) sessionStorage.setItem('aro_auth_id', params.get('authorization_id'));
+
+  async function run() {
+    if (!authId) {
+      lead.textContent = 'الصفحة دي بتفتح لوحدها لما تربطي عروستي من جوه ChatGPT.';
+      return;
+    }
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) {
+      lead.textContent = 'سجّلي دخولك الأول عشان نربط ليستتك بـ ChatGPT.';
+      show('login');
+      return;
+    }
+    const { data, error } = await sb.auth.oauth.getAuthorizationDetails(authId);
+    if (error) {
+      fail('الطلب ده خلص أو مش صالح. ارجعي لـ ChatGPT وابدئي الربط من الأول.');
+      lead.textContent = '';
+      return;
+    }
+    if (data.redirect_url) { sessionStorage.removeItem('aro_auth_id'); location.replace(data.redirect_url); return; }
+    lead.innerHTML = '<b>' + (data.client?.name || 'ChatGPT').replace(/[<>&]/g, '') + '</b> عايز يوصل لحسابك في عروستي.';
+    $('email').textContent = data.user?.email || session.user.email;
+    show('consent');
+  }
+
+  async function decide(approve) {
+    $('approve').disabled = $('deny').disabled = true;
+    const fn = approve ? sb.auth.oauth.approveAuthorization : sb.auth.oauth.denyAuthorization;
+    const { data, error } = await fn.call(sb.auth.oauth, authId);
+    if (error) { fail('حصلت مشكلة، جرّبي تاني.'); $('approve').disabled = $('deny').disabled = false; return; }
+    sessionStorage.removeItem('aro_auth_id');
+    location.replace(data.redirect_url);
+  }
+
+  $('googleBtn').onclick = async () => {
+    $('googleBtn').disabled = true;
+    const { error } = await sb.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: location.origin + location.pathname + '?authorization_id=' + encodeURIComponent(authId) },
+    });
+    if (error) { fail('معرفناش نفتح جوجل، جرّبي تاني.'); $('googleBtn').disabled = false; }
+  };
+  $('approve').onclick = () => decide(true);
+  $('deny').onclick = () => decide(false);
+  sb.auth.onAuthStateChange((e) => { if (e === 'SIGNED_IN' && !$('login').hidden) run(); });
+  run().catch(() => fail('حصلت مشكلة في التحميل، حدّثي الصفحة.'));
+</script>
+</body>
+</html>
